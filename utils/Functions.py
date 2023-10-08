@@ -49,6 +49,20 @@ def is_there_devices_file_uploaded(objects):
     return False
 
 
+def get_performance_variables_from_object_file(is_events_or_devices_file, data_files):
+    context_perf_vars = []
+    for obj in data_files:
+        if obj.event_file == is_events_or_devices_file:
+            remove_accent(obj.csv.name)
+            csv = pd.read_csv(obj.csv.name, ";")
+            performance_variables = csv.columns.values.tolist()
+            for perf_var in performance_variables:
+                perf_var = perf_var.replace(" ", "_")
+                if perf_var not in context_perf_vars:
+                    context_perf_vars.append(perf_var)
+    return context_perf_vars
+
+
 def remove_accent(feed):
     csv_f = open(feed, encoding='latin-1', mode='r')
     csv_str = csv_f.read()
@@ -56,6 +70,67 @@ def remove_accent(feed):
     csv_f.close()
     csv_f = open(feed, 'w')
     csv_f.write(csv_str_removed_accent)
+
+
+def swap_columns(old_dict, time_name):
+    # In the EVENTS file put the time in milliseconds column in the first place of the csv,
+    # in order to do the time filter well.
+    new_dict = {}
+
+    for key in old_dict.keys():
+        if key == time_name:
+            new_dict[key] = old_dict[key]
+            del old_dict[key]
+            break
+
+    for key in old_dict.keys():
+        new_dict[key] = old_dict[key]
+
+    return new_dict
+
+
+def down_sample(dict_csv, table_frequency, events_time_name, devices_time_name):
+    # Frequency of dict_csv data is 1000 Hz
+    if table_frequency != 1000:
+        average = int(round(1000/table_frequency))
+        time = []
+        for key in dict_csv.keys():
+            downsampled = dict_csv.get(key)[0::average]
+            if key == events_time_name or key == devices_time_name:
+                for element in downsampled:
+                    time.append(round(element / 10) * 10)
+                dict_csv[key] = time
+            else:
+                dict_csv[key] = downsampled
+            dict_csv[key] = downsampled
+    return dict_csv
+
+
+def filter_time_files(dict_down_sampled_files, init_filter_time, fin_filter_time, events_time_name,
+                      events_duration_time_name, devices_time_name):
+    files_to_render = []
+    for file in dict_down_sampled_files:
+        df = pd.DataFrame.from_dict(file, orient="columns")
+        df.to_csv("filtered_time_files.csv")
+        csv = pd.read_csv("filtered_time_files.csv", header=0, index_col=[0])
+        os.remove("filtered_time_files.csv")
+        performance_variables = csv.columns.values.tolist()
+        data = {}
+        for var in performance_variables:
+            data[var] = []
+        for row in csv.values.tolist():
+            filter_time = False
+            for (element_row, element_perf_var) in zip(row, performance_variables):
+                if element_perf_var == events_time_name or element_perf_var == devices_time_name:
+                    if fin_filter_time >= element_row >= init_filter_time:
+                        filter_time = True
+                        data[element_perf_var].append(element_row)
+                else:
+                    if filter_time:
+                        data[element_perf_var].append(element_row)
+        float_data_to_int_data(data, events_duration_time_name)
+        files_to_render.append(data)
+    return files_to_render
 
 
 # Frequency target 1000 Hz.

@@ -1,11 +1,11 @@
 import pandas as pd
 from rest_framework.response import Response
-from .serializers import SettingsSerializer
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed
 from eventsKeyWords.models import EventsKeyWords
 from devicesKeyWords.models import DevicesKeyWords
-from dataInput.models import DataFile
+from dataInput.models import DataInput
+from settings.serializers import SettingsSerializer
 from utils.Functions import is_there_events_file_uploaded,  \
                             remove_accent,                  \
                             process_device_data,            \
@@ -16,7 +16,8 @@ from utils.Functions import is_there_events_file_uploaded,  \
 
 # Create your views here.
 class RegisterSettingsView(APIView):
-    def post(self, request):
+    @staticmethod
+    def post(request):
         token = request.COOKIES.get('jwt')
         if not token:
             raise AuthenticationFailed("Unauthenticated")
@@ -28,12 +29,13 @@ class RegisterSettingsView(APIView):
 
 
 class GetInitAndFinTimesView(APIView):
-    def get(self, request):
+    @staticmethod
+    def get(request):
         token = request.COOKIES.get('jwt')
         if not token:
             raise AuthenticationFailed("Unauthenticated")
 
-        data_input_files = DataFile.objects.all()
+        data_input_files = DataInput.objects.all()
         context_init_time = 0
         context_fin_time = 0
         time_ms_name_events_file = ""

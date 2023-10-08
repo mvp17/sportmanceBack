@@ -9,7 +9,8 @@ import datetime
 
 # Create your views here.
 class RegisterView(APIView):
-    def post(self, request):
+    @staticmethod
+    def post(request):
         serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -17,7 +18,8 @@ class RegisterView(APIView):
 
 
 class LoginView(APIView):
-    def post(self, request):
+    @staticmethod
+    def post(request):
         email = request.data['email']
         password = request.data['password']
         user = User.objects.filter(email=email).first()
@@ -44,7 +46,8 @@ class LoginView(APIView):
 
 
 class UserView(APIView):
-    def get(self, request):
+    @staticmethod
+    def get(request):
         token = request.COOKIES.get('jwt')
         if not token:
             raise AuthenticationFailed("Unauthenticated")
@@ -61,7 +64,12 @@ class UserView(APIView):
 
 
 class LogoutView(APIView):
-    def post(self, request):
+    @staticmethod
+    def post(request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated")
+
         response = Response()
         response.delete_cookie('jwt')
         response.data = {

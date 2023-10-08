@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import DataInputView
+from dataInput.views import RegisterDataInput, DeleteDataInput
 
 urlpatterns = [
-    path("data-input", DataInputView.as_view()),
+    path("register-data-input", RegisterDataInput.as_view()),
+    path("delete-data-input/<int:pk>", DeleteDataInput.as_view()),
 ]

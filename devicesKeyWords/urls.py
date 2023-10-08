@@ -1,6 +1,7 @@
 from django.urls import path
-from .views import DevicesKeyWordsView
+from .views import RegisterDevicesKeyWordsView, GetPerformanceVariablesFromDevicesFile
 
 urlpatterns = [
-    path("devices-keywords", DevicesKeyWordsView.as_view()),
+    path("register-devices-keywords", RegisterDevicesKeyWordsView.as_view()),
+    path("get-perform-vars-devices-file", GetPerformanceVariablesFromDevicesFile.as_view()),
 ]
