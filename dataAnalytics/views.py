@@ -1,6 +1,6 @@
 import pandas as pd
 import math
-import json
+# import json
 from rest_framework.exceptions import NotFound, NotAcceptable, MethodNotAllowed
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,15 +9,15 @@ from eventsKeyWords.models import EventsKeyWords
 from settings.models import SessionParameters
 from dataInput.models import DataInput
 from utils.Functions import is_there_events_file_uploaded, is_there_devices_file_uploaded, remove_accent, \
-    process_event_data, get_init_time_and_fin_time, swap_columns, down_sample, get_events_csv_dict, process_device_data, \
-    filter_time_files
+    get_init_time_and_fin_time, swap_columns, down_sample, get_events_csv_dict, process_device_data, \
+    filter_time_files, process_csv_values
 
 
 # Create your views here.
 class GetDataToAnalyseView(APIView):
     @staticmethod
     def get(request):
-        vars_perf = []
+        perf_vars = []
         data_files = DataInput.objects.all()
 
         if data_files.count() == 0:
@@ -53,13 +53,9 @@ class GetDataToAnalyseView(APIView):
                     data[perf_var.replace(" ", "_")] = []
 
                 if obj.event_file == 0:
-                    for row in csv.values.tolist():
-                        for (element_row, element_perf_var) in zip(row, performance_variables):
-                            data[element_perf_var.replace(" ", "_")].append(element_row)
-                    event_file_dict = process_event_data(data, obj.frequency,
-                                                         time_ms_name_events_file, duration_time_ms_name_events_file)
-                    file_init_time, file_fin_time = get_init_time_and_fin_time(event_file_dict,
-                                                                               time_ms_name_events_file)
+                    file_init_time, file_fin_time, event_file_dict = process_csv_values(
+                                                                        csv, data, obj, time_ms_name_events_file,
+                                                                        duration_time_ms_name_events_file)
 
                     if not (fin_time <= file_fin_time and init_time >= file_init_time):
                         raise MethodNotAllowed("It is not possible to analyse data with the settings time parameters. "
@@ -103,13 +99,12 @@ class GetDataToAnalyseView(APIView):
 
             for file in render_data_files:
                 for key in file.keys():
-                    if key not in vars_perf:
-                        vars_perf.append(key)
+                    if key not in perf_vars:
+                        perf_vars.append(key)
 
             response = Response()
-            # response.set_cookie(key='jwt', value=token, httponly=True)
             response.data = {
-                'perf_vars_list': vars_perf,
-                'dict_csv_files': json.dumps(render_data_files)
+                'perf_vars': perf_vars,
+                'dict_csv_files': render_data_files  # json.dumps(render_data_files)
             }
             return response

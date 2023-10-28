@@ -37,7 +37,6 @@ class GetPerformanceVariablesFromEventsFile(APIView):
                 raise NotFound("There are not devices files uploaded. Not Found!")
 
         response = Response()
-        # response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {
             'performance_vars': context_perf_vars
         }

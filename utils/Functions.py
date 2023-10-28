@@ -248,3 +248,16 @@ def interpol_devices(data, csv, perf_vars, interpol_value, limit_length):
                     for time in range(extreme_time_value_to_interpolate,
                                       extreme_time_value_to_interpolate + interpol_value):
                         data[element_perf_var].append(time)
+
+
+def process_csv_values(csv, data, obj, time_ms_name_events_file, duration_time_ms_name_events_file):
+    performance_variables = csv.columns.values.tolist()
+
+    for row in csv.values.tolist():
+        for (element_row, perf_var) in zip(row, performance_variables):
+            data[perf_var.replace(" ", "_")].append(element_row)
+    file_dict = process_event_data(data, obj.frequency, time_ms_name_events_file,
+                                   duration_time_ms_name_events_file)
+    context_init_time, context_fin_time = get_init_time_and_fin_time(file_dict, time_ms_name_events_file)
+
+    return context_init_time, context_fin_time, file_dict

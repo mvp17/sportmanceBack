@@ -6,12 +6,11 @@ from eventsKeyWords.models import EventsKeyWords
 from devicesKeyWords.models import DevicesKeyWords
 from dataInput.models import DataInput
 from settings.serializers import SettingsSerializer
-from utils.Functions import is_there_events_file_uploaded,  \
-                            remove_accent,                  \
-                            process_device_data,            \
-                            process_event_data,             \
-                            get_events_csv_dict,            \
-                            get_init_time_and_fin_time
+from utils.Functions import is_there_events_file_uploaded, \
+    remove_accent, \
+    process_device_data, \
+    get_events_csv_dict, \
+    get_init_time_and_fin_time, process_csv_values
 
 
 # Create your views here.
@@ -58,12 +57,8 @@ class GetInitAndFinTimesView(APIView):
                 data[perf_var.replace(" ", "_")] = []
 
             if obj.event_file == 0:
-                for row in csv.values.tolist():
-                    for (element_row, perf_var) in zip(row, performance_variables):
-                        data[perf_var.replace(" ", "_")].append(element_row)
-                file_dict = process_event_data(data, obj.frequency, time_ms_name_events_file,
-                                               duration_time_ms_name_events_file)
-                context_init_time, context_fin_time = get_init_time_and_fin_time(file_dict, time_ms_name_events_file)
+                context_init_time, context_fin_time, _ = process_csv_values(csv, data, obj, time_ms_name_events_file,
+                                                                            duration_time_ms_name_events_file)
             else:
                 for row in csv.values.tolist():
                     for (element_row, perf_var) in zip(row, performance_variables):
@@ -79,10 +74,8 @@ class GetInitAndFinTimesView(APIView):
                     context_init_time, context_fin_time = get_init_time_and_fin_time(file_dict, time_name_devices_file)
 
         response = Response()
-        # response.set_cookie(key='jwt', value=token, httponly=True)
         response.data = {
             'initTime': context_init_time,
             'finTime': context_fin_time
         }
-
         return response

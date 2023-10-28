@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterDevicesKeyWordsView, GetPerformanceVariablesFromDevicesFile
+from devicesKeyWords.views import RegisterDevicesKeyWordsView, GetPerformanceVariablesFromDevicesFile
 
 urlpatterns = [
     path("register-devices-keywords", RegisterDevicesKeyWordsView.as_view()),

@@ -12,7 +12,6 @@ class RegisterDataInput(APIView):
         token = request.COOKIES.get('jwt')
         if not token:
             raise AuthenticationFailed("Unauthenticated")
-
         csv_file = request.FILES['csv']
         serializer = DataInputSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True) and csv_file.name.endswith('csv'):

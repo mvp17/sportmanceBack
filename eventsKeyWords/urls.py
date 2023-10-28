@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterEventsKeyWordsView, GetPerformanceVariablesFromEventsFile
+from eventsKeyWords.views import RegisterEventsKeyWordsView, GetPerformanceVariablesFromEventsFile
 
 urlpatterns = [
     path("register-events-keywords", RegisterEventsKeyWordsView.as_view()),

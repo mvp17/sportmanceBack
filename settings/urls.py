@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterSettingsView, GetInitAndFinTimesView
+from settings.views import RegisterSettingsView, GetInitAndFinTimesView
 
 urlpatterns = [
     path("register-settings", RegisterSettingsView.as_view()),
