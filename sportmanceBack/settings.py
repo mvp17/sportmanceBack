@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "devicesKeyWords",
     "eventsKeyWords",
     "dashboard",
+    "session",
     "rest_framework"
 ]
 
