@@ -11,3 +11,9 @@ class DataInputSerializer(serializers.ModelSerializer):
         instance = self.Meta.model(**validated_data)
         instance.save()
         return instance
+
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DataInput
+        fields = ['title', 'athlete', 'csv']

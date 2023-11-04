@@ -2,7 +2,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed, NotFound, NotAcceptable
 from dataInput.models import DataInput
-from dataInput.serializers import DataInputSerializer
+from dataInput.serializers import DataInputSerializer, FileSerializer
 
 
 # Create your views here.
@@ -38,3 +38,14 @@ class DeleteDataInput(APIView):
                 'message': 'File deleted successfully!'
             }
             return response
+
+
+class GetAllDataFiles(APIView):
+    @staticmethod
+    def get(request):
+        token = request.COOKIES.get('jwt')
+        if not token:
+            raise AuthenticationFailed("Unauthenticated")
+
+        serializer = FileSerializer(DataInput.objects.all(), many=True)
+        return Response(serializer.data)
