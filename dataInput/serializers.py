@@ -16,4 +16,4 @@ class DataInputSerializer(serializers.ModelSerializer):
 class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataInput
-        fields = ['title', 'athlete', 'csv']
+        fields = ['id', 'title', 'athlete', 'csv']

@@ -32,7 +32,7 @@ class GetPerformanceVariablesFromEventsFile(APIView):
             raise NotFound("Data files not uploaded. Not Found!")
         else:
             if is_there_events_file_uploaded(data_files):
-                context_perf_vars = get_performance_variables_from_object_file(0, data_files)
+                context_perf_vars = get_performance_variables_from_object_file(True, data_files)
             else:
                 raise NotFound("There are not devices files uploaded. Not Found!")
 

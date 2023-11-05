@@ -6,7 +6,7 @@ import unidecode
 
 def is_there_events_file_uploaded(objects):
     for obj in objects:
-        if obj.event_file == 0:
+        if obj.is_event_file == 0:
             return True
     return False
 
@@ -44,7 +44,7 @@ def get_events_csv_dict(objects_data):
 
 def is_there_devices_file_uploaded(objects):
     for obj in objects:
-        if obj.event_file == 1:
+        if obj.is_event_file == 1:
             return True
     return False
 
@@ -52,9 +52,9 @@ def is_there_devices_file_uploaded(objects):
 def get_performance_variables_from_object_file(is_events_or_devices_file, data_files):
     context_perf_vars = []
     for obj in data_files:
-        if obj.event_file == is_events_or_devices_file:
+        if obj.is_event_file == is_events_or_devices_file:
             remove_accent(obj.csv.name)
-            csv = pd.read_csv(obj.csv.name, ";")
+            csv = pd.read_csv(obj.csv.name)
             performance_variables = csv.columns.values.tolist()
             for perf_var in performance_variables:
                 perf_var = perf_var.replace(" ", "_")

@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/', include('eventsKeyWords.urls')),
     path('api/', include('devicesKeyWords.urls')),
     path('api/', include('dataInput.urls')),
+    path('api/', include('session.urls')),
 ]
