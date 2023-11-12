@@ -1,6 +1,5 @@
 import pandas as pd
 import math
-# import json
 from rest_framework.exceptions import NotFound, NotAcceptable, MethodNotAllowed
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -57,7 +56,7 @@ class GetDataToAnalyseView(APIView):
                 for perf_var in performance_variables:
                     data[perf_var.replace(" ", "_")] = []
 
-                if obj.event_file == 0:
+                if obj.is_event_file:
                     file_init_time, file_fin_time, event_file_dict = get_init_time_and_fin_time_from_events_file(
                                                                         csv, data, obj, time_ms_name_events_file,
                                                                         duration_time_ms_name_events_file)
@@ -110,6 +109,6 @@ class GetDataToAnalyseView(APIView):
             response = Response()
             response.data = {
                 'perf_vars': perf_vars,
-                'dict_csv_files': render_data_files  # json.dumps(render_data_files)
+                'dict_csv_files': render_data_files
             }
             return response
