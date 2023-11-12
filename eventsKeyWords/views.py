@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.exceptions import AuthenticationFailed, NotFound
 from eventsKeyWords.serializers import EventsKeyWordsSerializer
 from dataInput.models import DataInput
-from utils.Functions import get_performance_variables_from_object_file, is_there_events_file_uploaded
+from utils.functions.checkData import is_there_events_file_uploaded
+from utils.functions.getData import get_performance_variables_from_object_file
 
 
 # Create your views here.

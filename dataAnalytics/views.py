@@ -8,12 +8,17 @@ from devicesKeyWords.models import DevicesKeyWords
 from eventsKeyWords.models import EventsKeyWords
 from settings.models import SessionParameters
 from dataInput.models import DataInput
-from utils.Functions import is_there_events_file_uploaded, is_there_devices_file_uploaded, remove_accent, \
-    get_init_time_and_fin_time, swap_columns, down_sample, get_events_csv_dict, process_device_data, \
-    filter_time_files, process_csv_values
+from utils.functions.checkData import is_there_devices_file_uploaded, is_there_events_file_uploaded
 
 
 # Create your views here.
+from utils.functions.downSample import down_sample, filter_time_files
+from utils.functions.getData import get_init_time_and_fin_time_from_events_file, get_events_csv_dict, \
+    get_init_time_and_fin_time
+from utils.functions.processFile import remove_accent, swap_columns
+from utils.functions.resample import process_device_data
+
+
 class GetDataToAnalyseView(APIView):
     @staticmethod
     def get(request):
@@ -46,14 +51,14 @@ class GetDataToAnalyseView(APIView):
             for obj in data_files:
                 data = {}
                 remove_accent(obj.csv.name)
-                csv = pd.read_csv(obj.csv.name, ";")
+                csv = pd.read_csv(obj.csv.name, sep=';')
                 performance_variables = csv.columns.values.tolist()
 
                 for perf_var in performance_variables:
                     data[perf_var.replace(" ", "_")] = []
 
                 if obj.event_file == 0:
-                    file_init_time, file_fin_time, event_file_dict = process_csv_values(
+                    file_init_time, file_fin_time, event_file_dict = get_init_time_and_fin_time_from_events_file(
                                                                         csv, data, obj, time_ms_name_events_file,
                                                                         duration_time_ms_name_events_file)
 
@@ -67,7 +72,7 @@ class GetDataToAnalyseView(APIView):
                         time_ms_name_events_file)
                     )
                 else:
-                    for row in csv.values.tolist():
+                    for row in list(csv.values):
                         for (element_row, element_perf_var) in zip(row, performance_variables):
                             data[element_perf_var.replace(" ", "_")].append(element_row)
                     if is_there_events_file_uploaded(data_files):

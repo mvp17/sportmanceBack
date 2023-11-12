@@ -6,11 +6,11 @@ from eventsKeyWords.models import EventsKeyWords
 from devicesKeyWords.models import DevicesKeyWords
 from dataInput.models import DataInput
 from settings.serializers import SettingsSerializer
-from utils.Functions import is_there_events_file_uploaded, \
-    remove_accent, \
-    process_device_data, \
-    get_events_csv_dict, \
-    get_init_time_and_fin_time, process_csv_values
+from utils.functions.checkData import is_there_events_file_uploaded
+from utils.functions.getData import get_init_time_and_fin_time_from_events_file, get_events_csv_dict, \
+    get_init_time_and_fin_time
+from utils.functions.processFile import remove_accent
+from utils.functions.resample import process_device_data
 
 
 # Create your views here.
@@ -49,18 +49,19 @@ class GetInitAndFinTimesView(APIView):
 
         for obj in data_input_files:
             remove_accent(obj.csv.name)
-            csv = pd.read_csv(obj.csv.name)
+            csv = pd.read_csv(obj.csv.name, sep=';')
             performance_variables = csv.columns.values.tolist()
             data = {}
 
             for perf_var in performance_variables:
                 data[perf_var.replace(" ", "_")] = []
 
-            if obj.event_file == 0:
-                context_init_time, context_fin_time, _ = process_csv_values(csv, data, obj, time_ms_name_events_file,
-                                                                            duration_time_ms_name_events_file)
+            if obj.is_event_file:
+                context_init_time, context_fin_time, _ = get_init_time_and_fin_time_from_events_file(
+                                                            csv, data, obj, time_ms_name_events_file,
+                                                            duration_time_ms_name_events_file)
             else:
-                for row in csv.values.tolist():
+                for row in list(csv.values):
                     for (element_row, perf_var) in zip(row, performance_variables):
                         data[perf_var.replace(" ", "_")].append(element_row)
 

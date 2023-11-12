@@ -1,11 +1,12 @@
-import math
-
 from rest_framework.exceptions import AuthenticationFailed, NotFound, NotAcceptable
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from dataInput.models import DataInput
 from eventsKeyWords.models import EventsKeyWords
-from utils.Functions import is_there_events_file_uploaded, get_events_csv_dict, float_data_to_int_data
+from utils.functions.checkData import is_there_events_file_uploaded
+from utils.functions.getData import get_events_csv_dict
+from utils.functions.processFile import float_data_to_int_data
+import math
 
 
 # Create your views here.
