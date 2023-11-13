@@ -1,4 +1,5 @@
-from rest_framework.exceptions import AuthenticationFailed, NotFound, NotAcceptable
+import math
+from rest_framework.exceptions import NotFound, NotAcceptable
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from dataInput.models import DataInput
@@ -6,7 +7,7 @@ from eventsKeyWords.models import EventsKeyWords
 from utils.functions.checkData import is_there_events_file_uploaded
 from utils.functions.getData import get_events_csv_dict
 from utils.functions.processFile import float_data_to_int_data
-import math
+from utils.functions.checkData import check_auth_token
 
 
 # Create your views here.
@@ -14,8 +15,7 @@ class GetChartData(APIView):
     @staticmethod
     def get(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         data_files = DataInput.objects.all()
 

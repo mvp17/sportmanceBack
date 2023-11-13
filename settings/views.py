@@ -11,6 +11,7 @@ from utils.functions.getData import get_init_time_and_fin_time_from_events_file,
     get_init_time_and_fin_time
 from utils.functions.processFile import remove_accent
 from utils.functions.resample import process_device_data
+from utils.functions.checkData import check_auth_token
 
 
 # Create your views here.
@@ -18,8 +19,7 @@ class RegisterSettingsView(APIView):
     @staticmethod
     def post(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         serializer = SettingsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -31,8 +31,7 @@ class GetInitAndFinTimesView(APIView):
     @staticmethod
     def get(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         data_input_files = DataInput.objects.all()
         context_init_time = 0

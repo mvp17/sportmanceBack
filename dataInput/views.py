@@ -1,8 +1,9 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.exceptions import AuthenticationFailed, NotFound, NotAcceptable
+from rest_framework.exceptions import NotFound, NotAcceptable
 from dataInput.models import DataInput
 from dataInput.serializers import DataInputSerializer, FileSerializer
+from utils.functions.checkData import check_auth_token
 
 
 # Create your views here.
@@ -10,8 +11,8 @@ class RegisterDataInput(APIView):
     @staticmethod
     def post(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
+
         csv_file = request.FILES['csv']
         serializer = DataInputSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True) and csv_file.name.endswith('csv'):
@@ -25,8 +26,7 @@ class DeleteDataInput(APIView):
     @staticmethod
     def post(request, pk):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         file = DataInput.objects.get(pk=pk)
         if file is None:
@@ -44,8 +44,7 @@ class GetAllDataFiles(APIView):
     @staticmethod
     def get(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         serializer = FileSerializer(DataInput.objects.all(), many=True)
         return Response(serializer.data)

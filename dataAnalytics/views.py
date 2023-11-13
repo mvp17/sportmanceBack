@@ -8,19 +8,21 @@ from eventsKeyWords.models import EventsKeyWords
 from settings.models import SessionParameters
 from dataInput.models import DataInput
 from utils.functions.checkData import is_there_devices_file_uploaded, is_there_events_file_uploaded
-
-
-# Create your views here.
 from utils.functions.downSample import down_sample, filter_time_files
 from utils.functions.getData import get_init_time_and_fin_time_from_events_file, get_events_csv_dict, \
     get_init_time_and_fin_time
 from utils.functions.processFile import remove_accent, swap_columns
 from utils.functions.resample import process_device_data
+from utils.functions.checkData import check_auth_token
 
 
+# Create your views here.
 class GetDataToAnalyseView(APIView):
     @staticmethod
     def get(request):
+        token = request.COOKIES.get('jwt')
+        check_auth_token(token)
+
         perf_vars = []
         data_files = DataInput.objects.all()
 

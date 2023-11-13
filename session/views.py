@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from devicesKeyWords.models import DevicesKeyWords
 from eventsKeyWords.models import EventsKeyWords
 from settings.models import SessionParameters
+from utils.functions.checkData import check_auth_token
 
 
 # Create your views here.
@@ -11,8 +12,7 @@ class ExitSession(APIView):
     @staticmethod
     def get(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         is_there_settings = 0
         if EventsKeyWords.objects.count() == 1 or DevicesKeyWords.objects.count() == 1 or \
@@ -30,8 +30,7 @@ class DeleteSessionData(APIView):
     @staticmethod
     def post(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         EventsKeyWords.load().delete()
         DevicesKeyWords.load().delete()
@@ -48,8 +47,7 @@ class GetSessionData(APIView):
     @staticmethod
     def get(request):
         token = request.COOKIES.get('jwt')
-        if not token:
-            raise AuthenticationFailed("Unauthenticated")
+        check_auth_token(token)
 
         init_time = 0
         fin_time = 0
